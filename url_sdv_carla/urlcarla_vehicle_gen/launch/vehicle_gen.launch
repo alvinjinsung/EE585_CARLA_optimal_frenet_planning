@@ -3,7 +3,7 @@
   <!-- carla parameter -->
   <arg name='host' default='localhost'/> <!-- host the carla server is running on -->
   <arg name='port' default='2000'/> <!-- port of the carla server -->
-  <arg name="town" default="Town03"/> <!-- the carla town to load-->
+  <arg name="town" default="Town02"/> <!-- the carla town to load-->
   <arg name='timeout' default='10'/> <!-- the carla timeout for server communication -->
   <arg name='synchronous_mode' default='True'/> <!-- should the synchronous mode be used? Enable to get reproducible results independent of the system workload -->
   <arg name='synchronous_mode_wait_for_vehicle_control_command' default='False'/><!-- should the ros bridge wait for a vehicle control command before proceeding with the next tick -->
@@ -64,12 +64,6 @@
     <arg name="fov" value="$(arg fov)"/>
   </include>
 
-  <!-- To be able to maneuver with rviz, this node converts twist to vehicle control commands -->
-  <node pkg="carla_twist_to_control" type="carla_twist_to_control.py" name="carla_twist_to_control">
-    <remap from="/carla/$(arg role_name)/vehicle_control_cmd" to="/carla/$(arg role_name)/vehicle_control_cmd_manual"/>
-    <param name="role_name" value="$(arg role_name)"/>
-  </node>
-
   <!-- Scenario Runner and an example scenario-->
   <node pkg="rostopic" type="rostopic" name="publish_scenarios"
     args="pub /carla/available_scenarios carla_ros_scenario_runner_types/CarlaScenarioList '{ 'scenarios':  
@@ -86,6 +80,11 @@
     <arg name="role_name" value="$(arg role_name)"/>
     <arg name="scenario_runner_path" value="$(arg scenario_runner_path)"/>
     <arg name="wait_for_ego" value="True"/>
+  </include>
+
+  <!-- Visualize the ego vehicle (and support overriding the control) -->
+  <include file="$(find carla_manual_control)/launch/carla_manual_control.launch">
+    <arg name='role_name' value='$(arg role_name)'/>
   </include>
 
   <!-- Rviz visualization-->
