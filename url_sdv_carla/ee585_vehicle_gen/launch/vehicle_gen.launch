@@ -3,14 +3,11 @@
   <!-- carla parameter -->
   <arg name='host' default='localhost'/> <!-- host the carla server is running on -->
   <arg name='port' default='2000'/> <!-- port of the carla server -->
-  <arg name="town" default="Town01"/> <!-- the carla town to load-->
+  <arg name="town" default="Town02"/> <!-- the carla town to load-->
   <arg name='timeout' default='10'/> <!-- the carla timeout for server communication -->
   <arg name='synchronous_mode' default='True'/> <!-- should the synchronous mode be used? Enable to get reproducible results independent of the system workload -->
   <arg name='synchronous_mode_wait_for_vehicle_control_command' default='True'/><!-- should the ros bridge wait for a vehicle control command before proceeding with the next tick -->
   <arg name='fixed_delta_seconds' default='0.05'/><!-- frequency of the carla ticks -->
-
-  <!-- scenario runner parameter -->
-  <arg name='scenario_runner_path' default='$(env SCENARIO_RUNNER_PATH)'/><!-- path to scenario runner -->
 
   <!-- ego vehicle parameter -->
   <arg name="role_name" default="ego_vehicle"/> <!-- role name of the ego vehicle (used for identification in many nodes) -->
@@ -41,15 +38,7 @@
     <arg name='port' value='$(arg port)'/>
     <arg name='timeout' value='$(arg timeout)'/>
     <arg name="vehicle_filter" value='$(arg vehicle_filter)'/>
-    <arg name="sensor_definition_file" default="$(find urlcarla_vehicle_gen)/config/liosam_test_sensors.json"/>
-    <arg name='role_name' value='$(arg role_name)'/>
-  </include>
-
-  <!-- Provide a route and access to the CARLA waypoint API (required by carla_ad_agent) -->
-  <include file="$(find carla_waypoint_publisher)/launch/carla_waypoint_publisher.launch">
-    <arg name='host' value='$(arg host)'/>
-    <arg name='port' value='$(arg port)'/>
-    <arg name='timeout' value='$(arg timeout)'/>
+    <arg name="sensor_definition_file" default="$(find ee585_vehicle_gen)/config/ee585_sensors.json"/>
     <arg name='role_name' value='$(arg role_name)'/>
   </include>
 
@@ -64,31 +53,12 @@
     <arg name="fov" value="$(arg fov)"/>
   </include>
 
-  <!-- To be able to maneuver with rviz, this node converts twist to vehicle control commands -->
-  <node pkg="carla_twist_to_control" type="carla_twist_to_control.py" name="carla_twist_to_control">
-    <remap from="/carla/$(arg role_name)/vehicle_control_cmd" to="/carla/$(arg role_name)/vehicle_control_cmd_manual"/>
-    <param name="role_name" value="$(arg role_name)"/>
-  </node>
-
-  <!-- Scenario Runner and an example scenario-->
-  <node pkg="rostopic" type="rostopic" name="publish_scenarios"
-    args="pub /carla/available_scenarios carla_ros_scenario_runner_types/CarlaScenarioList '{ 'scenarios':  
-      [
-        {
-          'name': 'FollowLeadingVehicle',
-          'scenario_file': '$(find carla_ad_demo)/config/FollowLeadingVehicle.xosc'
-        }
-      ]
-    }' -l"/>
-  <include file="$(find carla_ros_scenario_runner)/launch/carla_ros_scenario_runner.launch">
-    <arg name='host' value='$(arg host)'/>
-    <arg name='port' value='$(arg port)'/>
-    <arg name="role_name" value="$(arg role_name)"/>
-    <arg name="scenario_runner_path" value="$(arg scenario_runner_path)"/>
-    <arg name="wait_for_ego" value="True"/>
+  <!-- Visualize the ego vehicle (and support overriding the control) -->
+  <include file="$(find carla_manual_control)/launch/carla_manual_control.launch">
+    <arg name='role_name' value='$(arg role_name)'/>
   </include>
 
   <!-- Rviz visualization-->
-  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find urlcarla_vehicle_gen)/config/urlcarla_sdv_sim.rviz" required="true" output="screen"/>
+  <!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find ee585_vehicle_gen)/config/ee585_carlasim.rviz" required="true" output="screen"/> -->
 
 </launch>
