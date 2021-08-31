@@ -60,27 +60,6 @@ Visualization Manager:
         "": true
       Queue Size: 100
       Value: true
-    - Class: rviz/Axes
-      Enabled: true
-      Length: 1
-      Name: os2
-      Radius: 0.10000000149011612
-      Reference Frame: ego_vehicle/lidar/os2
-      Value: true
-    - Class: rviz/Axes
-      Enabled: true
-      Length: 1
-      Name: imu
-      Radius: 0.10000000149011612
-      Reference Frame: ego_vehicle/imu/imu1
-      Value: true
-    - Class: rviz/Axes
-      Enabled: true
-      Length: 1
-      Name: gps
-      Radius: 0.10000000149011612
-      Reference Frame: ego_vehicle/gnss/gnss1
-      Value: true
     - Class: rviz/Image
       Enabled: true
       Image Topic: /carla/ego_vehicle/camera/rgb/view/image_color
@@ -108,9 +87,15 @@ Visualization Manager:
         Image: true
         Marker: true
         Value: true
-        gps: true
-        imu: true
-        os2: true
+        frames:
+          Value: true
+          cam1: true
+          cam2: true
+          ego_vehicle: true
+          imu: true
+          lidar: true
+        lidara: true
+        sensors: true
       Zoom Factor: 1
     - Alpha: 1
       Autocompute Intensity Bounds: true
@@ -127,21 +112,64 @@ Visualization Manager:
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: 0.9764225482940674
+      Max Intensity: 0.9970225095748901
       Min Color: 0; 0; 0
-      Min Intensity: 0.38295596837997437
-      Name: os2
+      Min Intensity: 0.8192940950393677
+      Name: lidara
       Position Transformer: XYZ
       Queue Size: 10
       Selectable: true
       Size (Pixels): 3
       Size (m): 0.10000000149011612
       Style: Flat Squares
-      Topic: /carla/ego_vehicle/lidar/os2/point_cloud
+      Topic: /carla/ego_vehicle/lidar/lidar/point_cloud
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
+    - Class: rviz/Group
+      Displays:
+        - Class: rviz/Axes
+          Enabled: true
+          Length: 0.5
+          Name: lidar
+          Radius: 0.25
+          Reference Frame: ego_vehicle/lidar/lidar
+          Value: true
+        - Class: rviz/Axes
+          Enabled: true
+          Length: 0.30000001192092896
+          Name: cam1
+          Radius: 0.20000000298023224
+          Reference Frame: ego_vehicle/camera/rgb/cam1
+          Value: true
+        - Class: rviz/Axes
+          Enabled: true
+          Length: 0.30000001192092896
+          Name: cam2
+          Radius: 0.20000000298023224
+          Reference Frame: ego_vehicle/camera/rgb/cam2
+          Value: true
+        - Class: rviz/Axes
+          Enabled: true
+          Length: 0.30000001192092896
+          Name: imu
+          Radius: 0.20000000298023224
+          Reference Frame: ego_vehicle/imu/imu
+          Value: true
+        - Class: rviz/Axes
+          Enabled: true
+          Length: 0.699999988079071
+          Name: ego_vehicle
+          Radius: 0.25
+          Reference Frame: <Fixed Frame>
+          Value: true
+      Enabled: true
+      Name: frames
+    - Class: rviz/Group
+      Displays: ~
+      Enabled: true
+      Name: sensors
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -170,25 +198,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 23.57726287841797
+      Distance: 13.306090354919434
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.16485346853733063
-        Y: 0.025563973933458328
-        Z: -0.40034276247024536
+        X: 1.2503865957260132
+        Y: 0.709261953830719
+        Z: 1.6658650636672974
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.550203800201416
+      Pitch: 0.8047961592674255
       Target Frame: ego_vehicle
       Value: Orbit (rviz)
-      Yaw: 2.750399112701416
+      Yaw: 1.8422168493270874
     Saved: ~
 Window Geometry:
   Camera:
