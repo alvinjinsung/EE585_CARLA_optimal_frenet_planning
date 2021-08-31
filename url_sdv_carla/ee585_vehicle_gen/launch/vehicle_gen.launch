@@ -41,7 +41,7 @@
     <arg name='port' value='$(arg port)'/>
     <arg name='timeout' value='$(arg timeout)'/>
     <arg name="vehicle_filter" value='$(arg vehicle_filter)'/>
-    <arg name="sensor_definition_file" default="$(find urlcarla_vehicle_gen)/config/ee585_sensors.json"/>
+    <arg name="sensor_definition_file" default="$(find ee585_vehicle_gen)/config/ee585_sensors.json"/>
     <arg name='role_name' value='$(arg role_name)'/>
   </include>
 
@@ -88,6 +88,6 @@
   </include>
 
   <!-- Rviz visualization-->
-  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find urlcarla_vehicle_gen)/config/ee585_carlasim.rviz" required="true" output="screen"/>
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find ee585_vehicle_gen)/config/ee585_carlasim.rviz" required="true" output="screen"/>
 
 </launch>
