@@ -108,7 +108,7 @@ class MyLocalPlanner(object):
         actor_list = self.world.get_actors()
         for actor in actor_list:
             if "role_name" in actor.attributes:
-                if actor.attributes["role_name"] == 'autopilot':
+                if actor.attributes["role_name"] == 'autopilot' or actor.attributes["role_name"] == "static":
                     carla_transform = actor.get_transform()
                     ros_transform = trans.carla_transform_to_ros_pose(carla_transform)
                     x = ros_transform.position.x

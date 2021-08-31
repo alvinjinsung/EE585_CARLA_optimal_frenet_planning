@@ -13,6 +13,7 @@ from geometry_msgs.msg import PoseStamped
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Point
 from carla_waypoint_types.srv import GetWaypoint
+import carla_ros_bridge.transforms as trans
 
 class Evaluator():
     def __init__(self, role_name):
@@ -31,6 +32,12 @@ class Evaluator():
         self._lane_invasion_sensor = None 
         self._odom_initialized = False
         self._route_assigned = False
+
+        # get world and map for finding actors and waypoints
+        client = carla.Client('localhost', 2000)
+        client.set_timeout(10.0)
+        self._world = client.get_world()
+        self._autopilot = {}
 
         # results
         self._mission_complete = False
@@ -233,6 +240,22 @@ class Evaluator():
                 print("Invasion: {}".format(self._invasion_counter))
                 print("Collsion: {}".format(self._collision_counter))
                 print("------------------------------------")
+
+                # set autopilot to move
+                actor_list = self._world.get_actors()
+                for actor in actor_list:
+                    if "role_name" in actor.attributes:
+                        if actor.attributes["role_name"] == 'autopilot':
+                            if not actor.id in self._autopilot:
+                                self._autopilot[actor.id] = False
+                            if not self._autopilot[actor.id]:
+                                carla_transform = actor.get_transform()
+                                ros_transform = trans.carla_transform_to_ros_pose(carla_transform)
+                                distance = self.point_distance(ros_transform.position, self._current_pose.position)
+                                # print("Distance to pilot {}: {}".format(actor.id, distance))
+                                if distance < 20.0:
+                                    self._autopilot[actor.id] = True
+                                    actor.set_autopilot(True)
 
     def point_distance(self, p1, p2):
         return math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2)

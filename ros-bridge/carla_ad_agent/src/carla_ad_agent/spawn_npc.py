@@ -125,43 +125,98 @@ def main():
                 if int(x.get_attribute('number_of_wheels')) == 4:
                     print(x)
                     filtered.append(x)       
-        # blueprints = [x for x in blueprints if int(x.get_attribute('number_of_wheels')) == 4]
-        # blueprints = [x for x in blueprints if x.get_attribute['id'].endswith('audi.a2')]
-        print("blueprints size: {}").format(len(filtered))
-        # spawn_points = world.get_map().get_spawn_points()
 
         spawn_points = []
-        
-        # obstacle #1 
-        ob1 = carla.Transform()
-        ob1.location.x = -485.49
-        ob1.location.y = 281.83
-        ob1.location.z = 0.0
-        ob1.rotation.roll = 0.0
-        ob1.rotation.pitch = 0.0
-        ob1.rotation.yaw = 250
-        spawn_points.append(ob1)
+        nearby_spawn = []
 
-        # obstacle #2
-        ob2 = carla.Transform()
-        ob2.location.x = -491.83
-        ob2.location.y = 269.24
-        ob2.location.z = 0.0
-        ob2.rotation.roll = 0.0
-        ob2.rotation.pitch = 0.0
-        ob2.rotation.yaw = 260
-        spawn_points.append(ob2)
+        # obstacle #1 (static)
+        ob = carla.Transform()
+        ob.location.x = -84.9686584473
+        ob.location.y = -151.203033447
+        ob.location.z = 0.0
+        ob.rotation.roll = 0.0
+        ob.rotation.pitch = 0.0
+        ob.rotation.yaw = 92.407
+        spawn_points.append(ob)
+        nearby_spawn.append(False)
 
-        # dynamic obs #1
-        ob3 = carla.Transform()
-        ob3.location.x = -337.83
-        ob3.location.y = 414.05
-        ob3.location.z = 0.0
-        ob3.rotation.roll = 0.0
-        ob3.rotation.pitch = 0.0
-        ob3.rotation.yaw = 210
-        spawn_points.append(ob3)
+        # obstacle #2 (static)
+        ob = carla.Transform()
+        ob.location.x = -67.297416687
+        ob.location.y = -201.81463623
+        ob.location.z = 0.0
+        ob.rotation.roll = 0.0
+        ob.rotation.pitch = 0.0
+        ob.rotation.yaw = 147.38
+        spawn_points.append(ob)
+        nearby_spawn.append(False)
+
+        # obstacle #3 (dynamic)
+        ob = carla.Transform()
+        ob.location.x = -91.869758606
+        ob.location.y = -121.14541626
+        ob.location.z = 0.0
+        ob.rotation.roll = 0.0
+        ob.rotation.pitch = 0.0
+        ob.rotation.yaw = 90.89
+        spawn_points.append(ob)
+        nearby_spawn.append(True)
         
+        # obstacle #4 (dynamic)
+        ob = carla.Transform()
+        ob.location.x = -83.6311950684
+        ob.location.y = -189.69744873
+        ob.location.z = 0.0
+        ob.rotation.roll = 0.0
+        ob.rotation.pitch = 0.0
+        ob.rotation.yaw = 115.494128
+        spawn_points.append(ob)
+        nearby_spawn.append(True)
+
+        # obstacle #5 (static)
+        ob = carla.Transform()
+        ob.location.x = -84.9123153687
+        ob.location.y = -22.9447059631
+        ob.location.z = 0.0
+        ob.rotation.roll = 0.0
+        ob.rotation.pitch = 0.0
+        ob.rotation.yaw = 90.89
+        spawn_points.append(ob)
+        nearby_spawn.append(False)
+
+        # obstacle #6 (dynamic)
+        ob = carla.Transform()
+        ob.location.x = -56.468914032
+        ob.location.y = 0.499776095152
+        ob.location.z = 0.0
+        ob.rotation.roll = 0.0
+        ob.rotation.pitch = 0.0
+        ob.rotation.yaw = 1.1881035
+        spawn_points.append(ob)
+        nearby_spawn.append(True)
+
+        # obstacle #7 (static)
+        ob = carla.Transform()
+        ob.location.x = -11.5705280304
+        ob.location.y = 75.8331298828
+        ob.location.z = 0.0
+        ob.rotation.roll = 0.0
+        ob.rotation.pitch = 0.0
+        ob.rotation.yaw = 90.810
+        spawn_points.append(ob)
+        nearby_spawn.append(False)
+
+        # obstacle #6 (dynamic)
+        ob = carla.Transform()
+        ob.location.x = -20.9099597931
+        ob.location.y = 170.449264526
+        ob.location.z = 0.0
+        ob.rotation.roll = 0.0
+        ob.rotation.pitch = 0.0
+        ob.rotation.yaw = 161.4343763
+        spawn_points.append(ob)
+        nearby_spawn.append(True)
+
         number_of_spawn_points = len(spawn_points)
 
         # if args.number_of_vehicles < number_of_spawn_points:
@@ -190,9 +245,15 @@ def main():
             if blueprint.has_attribute('driver_id'):
                 driver_id = random.choice(blueprint.get_attribute('driver_id').recommended_values)
                 blueprint.set_attribute('driver_id', driver_id)
-            blueprint.set_attribute('role_name', 'autopilot')
-            batch.append(SpawnActor(blueprint, transform))
-            # batch.append(SpawnActor(blueprint, transform).then(SetAutopilot(FutureActor, True)))
+            if nearby_spawn[n]:
+                blueprint.set_attribute('role_name', 'autopilot')
+                print("autopilot added")
+                batch.append(SpawnActor(blueprint, transform))
+                # batch.append(SpawnActor(blueprint, transform).then(SetAutopilot(FutureActor, True, traffic_manager.get_port())))
+            else:
+                blueprint.set_attribute('role_name', 'static')
+                print("static pilot added")
+                batch.append(SpawnActor(blueprint, transform))
 
         print("Batch size {}").format(len(batch))
 
@@ -201,10 +262,14 @@ def main():
                 logging.error(response.error)
             else:
                 vehicles_list.append(response.actor_id)
-                print(response.actor_id)
+                print("Actor {} is spawned".format(response.actor_id))
         
         traffic_manager.global_percentage_speed_difference(30.0)
         
+        # ignore red lights 
+        for x in world.get_actors():
+            traffic_manager.ignore_lights_percentage(x, 100.0)
+
         while True:
             if args.sync and synchronous_master:
                 world.tick()
@@ -218,7 +283,7 @@ def main():
             settings.synchronous_mode = False
             settings.fixed_delta_seconds = None
             world.apply_settings(settings)
-        print('\ndestroying %d vehicles' % len(vehicles_list))
+        # print('\ndestroying %d vehicles' % len(vehicles_list))
         client.apply_batch([carla.command.DestroyActor(x) for x in vehicles_list])
         client.apply_batch([carla.command.DestroyActor(x) for x in all_id])
         time.sleep(0.5)
@@ -228,12 +293,12 @@ if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
-        print('\ndestroying %d vehicles' % len(vehicles_list))
+        # print('\ndestroying %d vehicles' % len(vehicles_list))
         client.apply_batch([carla.command.DestroyActor(x) for x in vehicles_list])
         time.sleep(0.5)
         
     finally:
-        print('\ndestroying %d vehicles' % len(vehicles_list))
+        # print('\ndestroying %d vehicles' % len(vehicles_list))
         client.apply_batch([carla.command.DestroyActor(x) for x in vehicles_list])
         time.sleep(0.5)
         print('\ndone.')
