@@ -3,14 +3,7 @@ Panels:
     Help Height: 70
     Name: Displays
     Property Tree Widget:
-      Expanded:
-        - /Global Options1
-        - /Marker1
-        - /Axes1
-        - /Axes2
-        - /Marker3
-        - /Marker4
-        - /TF1
+      Expanded: ~
       Splitter Ratio: 0.5
     Tree Height: 329
   - Class: rviz/Selection
@@ -93,10 +86,9 @@ Visualization Manager:
       Unreliable: false
       Value: true
       Visibility:
-        Axes: true
+        Goal: true
         Grid: true
         Marker: true
-        MarkerArray: true
         Path: true
         TF: true
         Value: true
@@ -109,64 +101,10 @@ Visualization Manager:
         "": true
       Queue Size: 100
       Value: true
-    - Class: rviz/Axes
-      Enabled: true
-      Length: 1
-      Name: Axes
-      Radius: 0.10000000149011612
-      Reference Frame: map
-      Value: true
-    - Class: rviz/Axes
-      Enabled: false
-      Length: 1
-      Name: Axes
-      Radius: 0.10000000149011612
-      Reference Frame: ego_vehicle
-      Value: false
-    - Class: rviz/Marker
-      Enabled: false
-      Marker Topic: /carla/ego_vehicle/local_waypoints
-      Name: Marker
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: false
-    - Class: rviz/Marker
-      Enabled: false
-      Marker Topic: /carla/ego_vehicle/local_buffer
-      Name: Marker
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: false
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /carla/ego_vehicle/path_candidates
-      Name: MarkerArray
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: true
-    - Class: rviz/Marker
-      Enabled: false
-      Marker Topic: /carla/ego_vehicle/look_ahead
-      Name: Marker
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: false
     - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /carla/ego_vehicle/footage
-      Name: Marker
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: true
-    - Class: rviz/Marker
-      Enabled: true
-      Marker Topic: /carla/obs/velocity
-      Name: Marker
+      Marker Topic: /cara/ego_vehicle/goal_marker
+      Name: Goal
       Namespaces:
         {}
       Queue Size: 100
@@ -175,12 +113,12 @@ Visualization Manager:
       Enabled: true
       Frame Timeout: 15
       Frames:
+        605:
+          Value: true
         All Enabled: false
         ego_vehicle:
           Value: true
         ego_vehicle/camera/rgb/spectator_view:
-          Value: false
-        ego_vehicle/camera/rgb/view:
           Value: false
         map:
           Value: true
@@ -191,11 +129,10 @@ Visualization Manager:
       Show Names: true
       Tree:
         map:
-          ego_vehicle:
-            {}
+          605:
+            ego_vehicle:
+              {}
           ego_vehicle/camera/rgb/spectator_view:
-            {}
-          ego_vehicle/camera/rgb/view:
             {}
       Update Interval: 0
       Value: true
@@ -227,7 +164,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 28.991939544677734
+      Distance: 40.731590270996094
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1

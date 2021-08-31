@@ -52,7 +52,7 @@ class Evaluator():
             "/carla/{}/goal".format(role_name), PoseStamped, self.on_goal)
 
         self._goal_publisher = rospy.Publisher(
-            "/cara/{}/goal_marker".format(role_name), Marker, queue_size=1)
+            "/cara/{}/goal_marker".format(role_name), Marker, queue_size=1, latch=True)
 
     def __del__(self):
         self.output_result()
