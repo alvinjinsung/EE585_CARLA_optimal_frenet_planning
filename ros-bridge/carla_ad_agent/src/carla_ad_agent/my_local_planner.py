@@ -246,8 +246,6 @@ class MyLocalPlanner(object):
         """
         set a global plan to follow
         """
-        print("set_global_plan")
-        print(current_plan)
         self.target_route_point = None
         self._waypoint_buffer.clear()
         self._waypoints_queue.clear()
