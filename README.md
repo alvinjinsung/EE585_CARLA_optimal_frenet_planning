@@ -1,2 +1,2 @@
-# ee585_carla_project
+# EE585: CARLA project_Optimal Frenet Planning
 
