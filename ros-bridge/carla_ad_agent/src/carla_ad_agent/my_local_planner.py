@@ -672,7 +672,7 @@ class MyLocalPlanner(object):
                     carla_transform = obs.carla_transform
 
                     obs_bbox.extent.x += ego_vehicle_extent_x+0.1
-                    obs_bbox.extent.y += ego_vehicle_extent_y+0.3
+                    obs_bbox.extent.y += ego_vehicle_extent_y+0.2
 
                     vertices = obs_bbox.get_world_vertices(carla_transform)
 
@@ -715,7 +715,7 @@ class MyLocalPlanner(object):
                     carla_transform = obs.carla_transform
 
                     obs_bbox.extent.x += ego_vehicle_extent_x+0.1
-                    obs_bbox.extent.y += ego_vehicle_extent_y+0.3
+                    obs_bbox.extent.y += ego_vehicle_extent_y+0.2
 
                     vertices = obs_bbox.get_world_vertices(carla_transform)
 
@@ -853,7 +853,6 @@ class MyLocalPlanner(object):
 
         return True
 
-
     def visualize_paths(self, fplist):
 
         paths = MarkerArray()
@@ -906,9 +905,6 @@ class MyLocalPlanner(object):
 
         self._selected_path_publisher.publish(path)
         
-
-
-
     def check_paths(self, fplist, location):
         ok_ind = []
         speed_violation_num = 0
@@ -1009,13 +1005,13 @@ class MyLocalPlanner(object):
                 best_path = fp
 
         if best_path:
-            print("\x1b[6;30;33m------best_path_cost------\x1b[0m")
-            print("best_path_lateral_cost: ", K_LAT * best_path.lateral_cost)
-            print("best_path_longitudinal_cost: ", K_LON * best_path.longitudinal_cost)
-            print("best_path_global_following_cost: ", K_GLOBAL * best_path.global_following_cost)
-            if (best_path.obstacle_distance_cost != 0):
-                print("best_path_obstacle_distance_cost: ", K_OBSTACLE * (1.0/best_path.obstacle_distance_cost))
-            print("best_path_cost: ", best_path.final_cost)
+            # print("\x1b[6;30;33m------best_path_cost------\x1b[0m")
+            # print("best_path_lateral_cost: ", K_LAT * best_path.lateral_cost)
+            # print("best_path_longitudinal_cost: ", K_LON * best_path.longitudinal_cost)
+            # print("best_path_global_following_cost: ", K_GLOBAL * best_path.global_following_cost)
+            # if (best_path.obstacle_distance_cost != 0):
+            #     print("best_path_obstacle_distance_cost: ", K_OBSTACLE * (1.0/best_path.obstacle_distance_cost))
+            # print("best_path_cost: ", best_path.final_cost)
             best_path.path_indicator = 1
 
         return best_path
@@ -1033,7 +1029,6 @@ class MyLocalPlanner(object):
             rk.append(csp.calc_curvature(i_s))
 
         return rx, ry, ryaw, rk, csp
-
 
     def _init_controller(self, opt_dict):
         """
@@ -1094,7 +1089,6 @@ class MyLocalPlanner(object):
             # self._total_waypoints_s[-1] = self._total_waypoints_s[-2] \
             #     + np.sqrt((self._total_waypoints[-1].position.x - self._total_waypoints[-2].position.x) ** 2 + (self._total_waypoints[-1].position.y - self._total_waypoints[-2].position.y) ** 2)
 
-            
 
     def run_step(self, target_speed, current_speed, current_pose):
         """
@@ -1183,7 +1177,7 @@ class MyLocalPlanner(object):
             self.selected_path = self.frenet_optimal_planning(self._s_location, self._s_vel, self._s_accel, self._d_location, self._d_vel, self._d_accel, current_pose.position, target_speed, self._total_waypoints, self._total_waypoints_s)
 
             if self.selected_path:
-                print("\x1b[6;30;33m------path_exists!------\x1b[0m")
+                # print("\x1b[6;30;33m------path_exists!------\x1b[0m")
 
                 self._following_frenet_path = 1
                 self.visualize_selected_path(self.selected_path)
@@ -1209,7 +1203,7 @@ class MyLocalPlanner(object):
                     target_speed, current_speed, current_pose, self.frenet_route_point)
 
             else:
-                print("\x1b[6;30;33m------path_not available------\x1b[0m")
+                # print("\x1b[6;30;33m------path_not available------\x1b[0m")
                 self._following_frenet_path = 0
 
                 target_point = PointStamped()
@@ -1255,7 +1249,7 @@ class MyLocalPlanner(object):
 
             if (not path_lane_check) or (not path_collision_check):
 
-                print("\x1b[6;30;33m------path_not available------\x1b[0m")
+                # print("\x1b[6;30;33m------path_not available------\x1b[0m")
 
                 self._frenet_buffer.clear()
                 self._following_frenet_path = 0
@@ -1322,80 +1316,6 @@ class MyLocalPlanner(object):
         if max_index_frenet >= 0:
             for i in range(max_index_frenet + 1):
                 self._frenet_buffer.popleft()
-
-
-
-
-
-        # self._s_location, self._d_location, waypoints_vector = self.frenet_transform(current_pose.position, self._total_waypoints)
-
-        # # print("s_location: ", self._s_location)
-        # # print("d_location: ", self._d_location)
-
-        # dx = waypoints_vector[0]
-        # dy = waypoints_vector[1]
-
-        # # print("dx: ", dx)
-        # # print("dy: ", dy)
-
-        # s_direction = np.arctan2(dy, dx)
-        # s_perpendicular = s_direction + 90 * np.pi/180
-
-        # # print("s_direction: ", s_direction)
-        # # print("d_direction: ", s_perpendicular)
-
-        # # print("vehicle_yaw: ", self._vehicle_yaw)
-        # # print("current_speed: ", current_speed)
-
-        # self._s_vel = current_speed * 1/3.6 * np.cos(self._vehicle_yaw - s_direction)
-        # self._d_vel = current_speed * 1/3.6 * np.sin(self._vehicle_yaw - s_direction)
-
-        # # print("\x1b[6;30;33m------vel_s_d------\x1b[0m")
-        # # print("s_vel: ", self._s_vel)
-        # # print("d_vel: ", self._d_vel)
-
-        # accel_x = self._current_accel.linear.x
-        # accel_y = self._current_accel.linear.y
-
-        # self._s_accel = accel_x * np.cos(s_direction) + accel_y * np.sin(s_direction)
-        # self._d_accel = accel_x * np.cos(s_perpendicular) + accel_y * np.sin(s_perpendicular)
-
-        # # print("\x1b[6;30;33m------accel_s_d------\x1b[0m")
-        # # print("s_accel: ", self._s_accel)
-        # # print("d_accel: ", self._d_accel)
-
-        # path = self.frenet_optimal_planning(self._s_location, self._s_vel, self._s_accel, self._d_location, self._d_vel, self._d_accel, current_pose.position, target_speed, self._total_waypoints, self._total_waypoints_s)
-
-        # # target waypoint
-        # self.target_route_point = self._waypoint_buffer[0]
-
-        # # if path:
-        # #     print('\033[35m' + "path exists!!" + '\033[0m')
-        # #     target_s = path.s[1]
-        # #     target_d = path.d[1]
-
-        # #     x_coordinate, y_coordinate, yaw_value = self.cartesian_transform(target_s, target_d, self._total_waypoints, self._total_waypoints_s)
-
-        # #     self.target_route_point.position.x = x_coordinate
-        # #     self.target_route_point.position.y = y_coordinate
-
-        # #     target_point = PointStamped()
-        # #     target_point.header.frame_id = "map"
-        # #     target_point.point.x = x_coordinate
-        # #     target_point.point.y = y_coordinate
-        # #     target_point.point.z = self.target_route_point.position.z
-        # #     self._target_point_publisher.publish(target_point)
-    
-        # target_point = PointStamped()
-        # target_point.header.frame_id = "map"
-        # target_point.point.x = self.target_route_point.position.x
-        # target_point.point.y = self.target_route_point.position.y
-        # target_point.point.z = self.target_route_point.position.z
-        # self._target_point_publisher.publish(target_point)
-            
-        # # move using PID controllers
-        # control = self._vehicle_controller.run_step(
-        #     target_speed, current_speed, current_pose, self.target_route_point)
 
         
         return control, False

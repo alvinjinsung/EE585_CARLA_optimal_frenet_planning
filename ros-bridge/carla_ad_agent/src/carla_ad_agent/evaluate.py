@@ -23,7 +23,9 @@ class Evaluator():
         self._global_plan = None
         self._current_pose = None
         self._start_time = None
+        self._start_time_ROS = None
         self._end_time = None
+        self._end_time_ROS = None
         self._current_waypoint = None
         self._route_length = None
         self._current_speed = None
@@ -87,6 +89,7 @@ class Evaluator():
         """
         if not self._odom_initialized:
             self._start_time = time.time()
+            self._start_time_ROS = rospy.get_rostime().to_sec()
         
         if self._current_pose:
             delta = self.point_distance(odom.pose.pose.position, self._current_pose.position)
@@ -154,7 +157,8 @@ class Evaluator():
             return
 
         print("\x1b[6;30;42m------Simulation Result------")
-        print("Time: {} s".format(self._end_time - self._start_time))
+        print("Time: {} s".format(self._end_time_ROS - self._start_time_ROS))
+        print()
         print("Distance travelled: {} m".format(self._distance_travelled))
         print("Mission progress: {}% ".format(self._progress))
         print("Mission completed: {}".format(self._mission_complete))
@@ -172,7 +176,7 @@ class Evaluator():
         while not rospy.is_shutdown():
             if self._odom_initialized:
 
-                # print("------------------------------------")
+                print("------------------------------------")
 
                 # initialize collision sensor
                 if not self._collision_sensor:
@@ -197,13 +201,20 @@ class Evaluator():
 
                 # Time evaluation
                 self._end_time = time.time()
+                self._end_time_ROS = rospy.get_rostime().to_sec()
                 time_elapsed = self._end_time - self._start_time
-                if time_elapsed >= 60 * 5.0:
-                    print("Time is up")
-                    self.output_result()
+                ROS_time_elapsed = self._end_time_ROS - self._start_time_ROS
+                # if time_elapsed >= 60 * 5.0:
+                #     print("Time is up")
+                #     self.output_result()
                 # else:
                 #     print("Timer: {} sec".format(time_elapsed))
-
+                if ROS_time_elapsed >= 60 * 5.0:
+                    print("Time is up")
+                    self.output_result()
+                else:
+                    # print("Timer: {} sec".format(time_elapsed))
+                    print("ROS Timer: {} sec".format(ROS_time_elapsed))
                 # Progress evaluation
                 if self._route_assigned:
                     self._current_waypoint = self.get_waypoint(self._current_pose.position)
@@ -218,12 +229,12 @@ class Evaluator():
                         self._progress = float(min_idx + 1) / self._route_length * 100.0
                         if self._progress > 100.0:
                             self._progress = 100.0
-                        # print("Progress: {} %".format(self._progress))
+                        print("Progress: {} %".format(self._progress))
                 
                 # on goal evaluation
                 distance_to_goal = self.point_distance(self._current_pose.position, self._goal_point)
-                # print("Distance to goal {} m".format(distance_to_goal))
-                if distance_to_goal <= 4.0 and self._current_speed == 0.0:
+                print("Distance to goal {} m".format(distance_to_goal))
+                if distance_to_goal <= 4.0 and self._current_speed <= 0.001:
                     if not self._on_goal_start_timer:
                         self._on_goal_start_timer = time.time()
                     else:
@@ -237,9 +248,9 @@ class Evaluator():
                     self._on_goal_start_timer = None
 
                 # invasion and collision
-                # print("Invasion: {}".format(self._invasion_counter))
-                # print("Collsion: {}".format(self._collision_counter))
-                # print("------------------------------------")
+                print("Invasion: {}".format(self._invasion_counter))
+                print("Collsion: {}".format(self._collision_counter))
+                print("------------------------------------")
 
                 # set autopilot to move
                 actor_list = self._world.get_actors()
@@ -276,3 +287,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
